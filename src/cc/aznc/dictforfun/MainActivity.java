@@ -12,16 +12,16 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FilterQueryProvider;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
 	
 	AutoCompleteTextView dictSearch;
 	Dictionary dict;
 	Button queryBtn;
-	EditText resultTxt;
+	TextView resultTxt;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
 		
 		dictSearch = (AutoCompleteTextView) findViewById(R.id.dictSearch);
 		queryBtn = (Button) findViewById(R.id.queryButton);
-		resultTxt = (EditText) findViewById(R.id.resultText);
+		resultTxt = (TextView) findViewById(R.id.resultText);
 		
 		// slow at app first run, maybe use thread do it
 		dict = new Dictionary(this);

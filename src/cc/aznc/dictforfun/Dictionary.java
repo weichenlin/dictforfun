@@ -1,5 +1,6 @@
 package cc.aznc.dictforfun;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -7,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.zip.ZipInputStream;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -37,21 +39,22 @@ public class Dictionary {
 	
 	private void copyDBFileTo(String dst)
 	{
-		InputStream in = null;
 		OutputStream out = null;
+		ZipInputStream zin = null;
 		try {
-			in = context.getResources().openRawResource(R.raw.dict);
+			InputStream in = context.getResources().openRawResource(R.raw.dict);
+			zin = new ZipInputStream(new BufferedInputStream(in));
 			out = new BufferedOutputStream(new FileOutputStream(dst));
 			byte data[] = new byte[1024000];
 			int read;
-			while ((read = in.read(data)) > 0) {
+			// have only one file in zip
+			while ((read = zin.read(data)) > 0) {
 	            out.write(data, 0, read);
 	        }
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// there should be no exception
 		} finally {
-			close(in);
+			close(zin);
 			close(out);
 		}
 	}
