@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">dictforfun</string>
+    <string name="dict_hint">查詢字典:</string>
+    <string name="btn_query">查詢</string>
+
+</resources>
