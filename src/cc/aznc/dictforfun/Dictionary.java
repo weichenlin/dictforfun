@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import android.content.Context;
@@ -27,10 +28,19 @@ public class Dictionary {
 	
 	private void initDBFile()
 	{
-		String dbFilePath = context.getFilesDir() + "/dict.db";
+		//String dbFolder = context.getFilesDir().getPath();
+		//String dbFolder = context.getFilesDir().getPath() + "/databases";
+		String dbFolder = context.getDatabasePath("dict").toString();
+		File folder = new File(dbFolder);
+		if(!folder.exists()) {
+			Log.v("initDB", "folder unexists, going to create:" + dbFolder);
+			folder.mkdirs();
+		}
+		String dbFilePath = dbFolder + "/dict.db";
 		Log.v("initDB", "dbFilePath = " + dbFilePath);
 		File file = new File(dbFilePath);
 		if(!file.exists()) {
+			Log.v("initDB", "file unexists, going to copy one");
 			copyDBFileTo(dbFilePath);
 		}
 		
@@ -44,6 +54,8 @@ public class Dictionary {
 		try {
 			InputStream in = context.getResources().openRawResource(R.raw.dict);
 			zin = new ZipInputStream(new BufferedInputStream(in));
+			ZipEntry ze = zin.getNextEntry();
+			Log.v("copyDBFileTo", "copy " + ze.getName());
 			out = new BufferedOutputStream(new FileOutputStream(dst));
 			byte data[] = new byte[1024000];
 			int read;
@@ -53,6 +65,7 @@ public class Dictionary {
 	        }
 		} catch (IOException e) {
 			// there should be no exception
+			Log.e("copyDBFileTo", "something really bad happens");
 		} finally {
 			close(zin);
 			close(out);
@@ -72,18 +85,20 @@ public class Dictionary {
 	public String query(String word)
 	{
 		String words[] = {word};
-		Cursor cursor = db.rawQuery("SELECT * FROM DICT WHERE words = ?", words);
+		Cursor cursor = db.rawQuery("SELECT json FROM dict WHERE words = ?", words);
 		if (cursor.moveToFirst()) {
-			String v = cursor.getString(1);
+			String v = cursor.getString(0);
 			return v;
 		}
 		return null;
 	}
 
 	public Cursor getLike(String queryWord) {
+		Log.d("getLike", "start getLike");
 		String words[] = {queryWord + "%"};
-		Cursor cursor = db.rawQuery("SELECT words, rowid AS _id FROM DICT WHERE words like ?", words);
+		Cursor cursor = db.rawQuery("SELECT words, _id FROM dict WHERE words like ? LIMIT 10", words);
 		cursor.moveToFirst();
+		Log.d("getLike", "end getLike");
 		return cursor;
 	}
 }
